@@ -1,0 +1,13 @@
+
+tap "homebrew/cask"
+
+# javascript && json
+brew "yarn"
+brew "jq"
+
+# recommended editor
+cask "visual-studio-code"
+
+# deployment
+cask "docker"
+cask "google-cloud-sdk"

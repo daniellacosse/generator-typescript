@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "Daniel LaCosse",
+      "authorEmail": "d@niellacos.se",
+      "authorUrl": "https://daniellacos.se"
+    }
+  }
+}

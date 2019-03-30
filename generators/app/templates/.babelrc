@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "extensions": [
+          ".ts"
+        ],
+        "root": "."
+      }
+    ]
+  ],
+  "presets": [
+    "@babel/preset-typescript"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "scripthost"
+    ],
+    "module": "commonjs",
+    "outDir": "dist",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "types": [
+      "node",
+      "sinon",
+      "yaml"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    ".cache",
+    "dist",
+    ".vscode",
+    ".github",
+    ".circleci",
+    "config",
+    "docs",
+    ".nyc_output",
+    ".circleci"
+  ],
+  "typedocOptions": {
+    "exclude": "**/__tests__",
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "hideGenerator": true,
+    "includeDeclarations": true,
+    "mode": "file",
+    "name": "<%= title =%>",
+    "out": "documentation",
+    "readme": "none",
+    "theme": "markdown"
+  }
+}
