@@ -13,6 +13,7 @@ INDEX_BUILD_POINT=$(SOURCE_FOLDER)/index.ts $(BUILD_FLAGS)
 TEST_BUILD_POINT=$(SOURCE_FOLDER)/**/__tests__ $(BUILD_FLAGS)
 
 VERSION=$(cat package.json | jq -r '.version')
+IMAGE_REGISTRY=gcr.io/<%= gcpProjectID %>/<%= title %>
 
 # -- commands --
 .PHONY: start \
@@ -57,7 +58,7 @@ image: yarn.lock package.json
 
 release: image
 	gcloud auth configure-docker ;\
-	gcloud docker push gcr.io/<%= gcp_project_id %>/<%= title %>:$(VERSION)
+	gcloud docker push ${IMAGE_REGISTRY}:$(VERSION)
 
 clear-all: clear-yarn clear-cache clear-docs
 

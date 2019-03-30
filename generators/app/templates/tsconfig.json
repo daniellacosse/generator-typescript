@@ -39,7 +39,7 @@
     "hideGenerator": true,
     "includeDeclarations": true,
     "mode": "file",
-    "name": "<%= title =%>",
+    "name": "<%= displayTitle %>",
     "out": "documentation",
     "readme": "none",
     "theme": "markdown"
