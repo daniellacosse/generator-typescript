@@ -8,9 +8,12 @@ SOURCE_FOLDER=source
 SOURCE_FOLDERS=$(find $(SOURCE_FOLDER) -type d)
 SOURCE_FILES=$(find $(SOURCE_FOLDER) -type f -name '*')
 
-BUILD_FLAGS=$(--target node --no-minify --public-url $$PWD/dist)
-INDEX_BUILD_POINT=$(SOURCE_FOLDER)/index.ts $(BUILD_FLAGS)
-TEST_BUILD_POINT=$(SOURCE_FOLDER)/**/__tests__ $(BUILD_FLAGS)
+# we need to "unpack" these flags at buildtime with the "+s" function
+BUILD_FLAGS=--target+node+--no-minify+--public-url+$$PWD/dist
++s=$(subst +, ,$1)
+
+INDEX_BUILD_POINT=$(SOURCE_FOLDER)/index.ts
+TEST_BUILD_POINT=$(SOURCE_FOLDER)/**/__tests__
 
 VERSION=$(cat package.json | jq -r '.version')
 IMAGE_REGISTRY=gcr.io/<%= gcpProjectID %>/<%= title %>
@@ -43,7 +46,7 @@ test: dist/source
 
 watch:
 	yarn concurrently \
-		'yarn parcel watch $(TEST_BUILD_POINT)' \
+		'yarn parcel watch $(TEST_BUILD_POINT) $(call +s, $(BUILD_FLAGS))' \
 		'yarn ava --watch'
 
 code: .vscode/extensions.json
@@ -75,9 +78,9 @@ clear-docs:
 
 # -- files --
 dist/index.js: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
-	yarn parcel build $(INDEX_BUILD_POINT)
+	yarn parcel build $(INDEX_BUILD_POINT) $(call +s, $(BUILD_FLAGS))
 dist/source: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
-	yarn parcel build $(TEST_BUILD_POINT)
+	yarn parcel build $(TEST_BUILD_POINT) $(call +s, $(BUILD_FLAGS))
 documentation: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
 	yarn typedoc
 .vscode/extensions.json: Brewfile
