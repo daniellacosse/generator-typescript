@@ -9,3 +9,7 @@
 ## development
 
 `make code`
+
+## deployment
+
+`make release`

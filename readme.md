@@ -1,5 +1,5 @@
-# generator-typescript [![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-image]][daviddm-url]
-> Typescript the daniel way
+# generator-typescript
+typescript, my way
 
 ## Installation
 
