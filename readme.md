@@ -4,7 +4,7 @@
 
 ## installation
 
-> before you get started, you'll need to install `homebrew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
+> before you get started, you'll need to install `homebrew`: [ [mac](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
 
 ```bash
 brew install yarn
