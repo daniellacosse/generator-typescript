@@ -4,7 +4,7 @@
 
 ## installation
 
-> before you get started, you'll need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
+> before you get started, you'll need to install `homebrew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
 
 ```bash
 brew install yarn
@@ -13,14 +13,19 @@ yarn global add yo @daniellacosse/generator-typescript
 
 ## creating a project
 
+feel free to add this to your `~/.bash_profile` or just run the commands manually:
+
 ```sh
-read $MY_PROJECT_NAME
+dts() {
+  read $MY_PROJECT_NAME
 
-# the terminal will wait for you to type in the name of your project. please use `pascal-case`
+  # the terminal will wait for you to type in the name of your project. please use `pascal-case`
 
-mkdir $MY_PROJECT_NAME
-cd $MY_PROJECT_NAME
-yo @daniellacosse/typescript
+  mkdir $MY_PROJECT_NAME
+  cd $MY_PROJECT_NAME
+
+  yo @daniellacosse/typescript
+}
 ```
 
 this will generate the boilerplate. now the hard part - setting up **github** and **circleci**
