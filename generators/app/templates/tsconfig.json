@@ -16,24 +16,22 @@
     "sourceMap": true,
     "types": [
       "node",
-      "sinon",
-      "yaml"
+      "jest"
     ]
   },
   "exclude": [
-    "node_modules",
     ".cache",
-    "dist",
-    ".vscode",
-    ".github",
     ".circleci",
+    ".github",
+    ".vscode",
     "config",
-    "docs",
-    ".nyc_output",
-    ".circleci"
+    "coverage",
+    "dist",
+    "documentation",
+    "node_modules"
   ],
   "typedocOptions": {
-    "exclude": "**/__tests__",
+    "exclude": "**/__tests__/*.ts",
     "excludeExternals": true,
     "excludePrivate": true,
     "hideGenerator": true,

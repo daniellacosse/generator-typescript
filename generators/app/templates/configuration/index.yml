@@ -2,4 +2,3 @@ title: <%= title %>
 description: <%= description %>
 username: <%= username %>
 email: <%= email %>
-project_id: <%= gcpProjectID %>

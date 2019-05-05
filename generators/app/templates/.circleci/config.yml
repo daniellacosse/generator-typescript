@@ -16,58 +16,107 @@ commands:
           git config user.name 'CircleCI'
           git config user.email '<>'
 
-  get_node_modules:
-    description: "fetch all necessary node dependencies"
+  set_production_environment:
+    description: "sets up our needed environment variables"
     steps:
+      - run: | 
+          echo ENV=circleci > .env
+  
+  get_dependencies:
+    description: "fetch all necessary dependencies"
+    steps:
+      - checkout
+      - set_production_environment
+
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "yarn.lock" }}
             - v1-dependencies-
 
-      - run: make node_modules
+      - run: make yarn.lock
+      - run: sudo apt-get install -y jq
 
       - save_cache:
           paths:
+            - .cache/deps
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
 jobs:
-  build: # we have to call the default job "build" otherwise circleci spins up multiple jobs
+  build:
     executor: node
 
     steps:
-      - checkout
-      - get_node_modules
+      - get_dependencies
+
+      - run: make
+  
+  lint:
+    executor: node
+    
+    steps:
+      - get_dependencies
+      
+      - run: make lint
+
+  test:
+    executor: node
+
+    steps:
+      - get_dependencies
 
       - run: make test
 
-  update_docs_and_patch:
+  coverage:
     executor: node
 
     steps:
-      - checkout
-      - get_node_modules
+      - get_dependencies
+
+      - run: make coverage
+
+  release_patch:
+    executor: node
+
+    steps:
+      - get_dependencies
       - set_git_user
 
       - run: |
-          make patch
+          set -e
 
-          if [[ $(git diff) ]]; then
-            git add -A
-            git commit --amend --no-edit
-          fi
+          git checkout $CIRCLE_BRANCH
 
-          git push origin master --tags
+          # tag master with new version/docs and push
+          make release!
+          git push origin $CIRCLE_BRANCH --tags
 
 workflows:
-  version: 2
-
   build:
     jobs:
-      - build
-  master:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - master
+      - test:
+          filters:
+            branches:
+              ignore:
+                - master
+      - coverage:
+          filters:
+            branches:
+              ignore:
+                - master
+  release:
     jobs:
-      - update_docs_and_patch:
+      - release_patch:
           filters:
             branches:
               only: master

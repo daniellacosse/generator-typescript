@@ -45,12 +45,6 @@ module.exports = class extends Generator {
             name: "email",
             message: "your email address",
             default: email.trim()
-          },
-          {
-            type: "input",
-            name: "gcpProjectID",
-            message: "your project ID in GCP",
-            default: "todo-123"
           }
         ];
 
