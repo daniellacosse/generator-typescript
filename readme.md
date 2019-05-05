@@ -43,7 +43,7 @@ refresh the page, and you should see it
 
 next, there are a couple configuration steps to take care of in `github` that we unfortunately have to do manually. first, it's preferred to only allow squashed commits
 
-this is important because it keeps the commit chain short, the history good, and increases the chance that each commit on the main branch is atomic and transportable
+> this is important because it keeps the commit chain short, the history good, and increases the chance that each commit on the main branch is atomic and transportable
 
 go to `Settings`:
 
