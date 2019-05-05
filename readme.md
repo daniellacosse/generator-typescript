@@ -1,5 +1,7 @@
 # @daniellacosse/generator-typescript
 
+[![npm version](https://badge.fury.io/js/%40daniellacosse%2Fgenerator-typescript.svg)](https://badge.fury.io/js/%40daniellacosse2Fgenerator-typescript)
+
 ## installation
 
 > before you get started, you'll need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]

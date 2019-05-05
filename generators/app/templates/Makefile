@@ -60,7 +60,7 @@ lint: $(DEP_FILES)
 	current_branch=$$(git rev-parse --abbrev-ref HEAD) ;\
 	$(call WHEN_IN,circleci,diff_target=master...$$current_branch) ;\
 	\
-	changes=$$(git diff --diff-filter=MA $$diff_target --name-only | egrep '\.js$$|\.vue$$') ;\
+	changes=$$(git diff --diff-filter=MA $$diff_target --name-only | egrep '\.ts$$') ;\
 	if [[ $$changes ]]; then yarn eslint $$changes; fi
 
 test: $(DEP_FILES)
