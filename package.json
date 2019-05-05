@@ -1,6 +1,6 @@
 {
   "name": "@daniellacosse/generator-typescript",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "develop typescript at scale with a full suite of helpful tools",
   "author": {
     "name": "Daniel LaCosse",
