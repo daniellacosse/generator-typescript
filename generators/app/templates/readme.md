@@ -1,8 +1,8 @@
 # <%= displayTitle %> [![CircleCI](https://circleci.com/gh/<%= username %>/<%= title %>.svg?style=svg)](https://circleci.com/gh/<%= username %>/<%= title %>)
 
-[![documentation](https://img.shields.io/badge/documentation-blue.svg)](https://github.com/<%= username %>/<%= title %>/tree/master/documentation#process-automation-srcrary-documentation) [![npm version](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>.svg)](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>)
+[![documentation](https://img.shields.io/badge/documentation-blue.svg)](https://github.com/<%= username %>/<%= title %>/tree/master/documentation#<%= title %>-documentation) [![npm version](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>.svg)](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>)
 
-> before you get started, you need `brew`: [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux)
+> before you get started, you need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
 
 ## commands
 
@@ -30,13 +30,13 @@ make lint
 make test
 ```
 
-### `watch` : run the tests as you edit code
+### `watch` : automatically re-run the tests as you make edits
 
 ```sh
 make watch
 ```
 
-### `coverage` : check if we have sufficient test coverage
+### `coverage` : check if you have sufficient test coverage
 
 ```sh
 make coverage
@@ -45,7 +45,7 @@ make coverage
 ### `ci` : debug a continuous integration job locally
 
 ```sh
-make ci JOB=<your-circle-job>
+make ci JOB=<your-circleci-job>
 ```
 
 **JOB options**

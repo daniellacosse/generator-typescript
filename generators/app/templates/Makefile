@@ -20,7 +20,7 @@ BUILD_FOLDER=dist
 PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/index.ts
 PACKAGE_BUILD=$(BUILD_FOLDER)/index.js
 
-# test
+# tests
 TEST_CONFIG_FOLDER=.jest
 TEST_CONFIG=$(TEST_CONFIG_FOLDER)/jest.config.js
 TEST_RESULTS=$(BUILD_FOLDER)/.jest-test-results.json
