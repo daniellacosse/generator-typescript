@@ -69,5 +69,18 @@ module.exports = class extends Generator {
 
   install() {
     this.yarnInstall();
+    this.spawnCommandSync("git", ["init"]);
+    this.spawnCommandSync("git", [
+      "remote",
+      "add",
+      "origin",
+      `https://github.com/${this.props.username}/${this.props.title}/`
+    ]);
+    this.spawnCommandSync("git", ["add", "--all"]);
+    this.spawnCommandSync("git", [
+      "commit",
+      "-m",
+      '"initial commit from generator"'
+    ]);
   }
 };

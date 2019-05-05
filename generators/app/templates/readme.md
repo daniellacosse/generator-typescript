@@ -2,7 +2,7 @@
 
 [![documentation](https://img.shields.io/badge/documentation-blue.svg)](https://github.com/<%= username %>/<%= title %>/tree/master/documentation#<%= title %>-documentation) [![npm version](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>.svg)](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>)
 
-> before you get started, you need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
+> before you get started, you'll need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
 
 ## commands
 
