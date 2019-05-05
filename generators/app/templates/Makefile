@@ -20,9 +20,13 @@ BUILD_FOLDER=dist
 PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/index.ts
 PACKAGE_BUILD=$(BUILD_FOLDER)/index.js
 
+# config
+CONFIG_FOLDER=configuration
+CONFIG_FOLDERS_AND_FILES:=tsconfig.json $(shell find $(CONFIG_FOLDER) -type d) \
+	$(shell find $(CONFIG_FOLDER) -type f -name '*')
+
 # tests
-TEST_CONFIG_FOLDER=.jest
-TEST_CONFIG=$(TEST_CONFIG_FOLDER)/jest.config.js
+TEST_COVERAGE_FOLDER=coverage
 TEST_RESULTS=$(BUILD_FOLDER)/.jest-test-results.json
 
 # documentation
@@ -65,13 +69,13 @@ lint: $(DEP_FILES)
 
 test: $(DEP_FILES)
 	$(call WHEN_IN,circleci,flags=--bail) ;\
-	yarn jest $$flags --config $(TEST_CONFIG) --json --outputFile=$(TEST_RESULTS)
+	yarn jest $$flags --json --outputFile=$(TEST_RESULTS)
 
 watch: $(DEP_FILES)
-	yarn jest --watch --config $(TEST_CONFIG)
+	yarn jest --watch
 
 coverage: $(DEP_FILES)
-	yarn jest --coverage --config $(TEST_CONFIG)
+	yarn jest --coverage
 
 ci: $(LOCAL_CI_CONFIG) $(DEP_FILES)
 	circleci local execute --job $(JOB) --config $(LOCAL_CI_CONFIG)
@@ -103,15 +107,18 @@ flush-tmp!: flush-deps! flush-build! flush-ci! flush-coverage!
 flush-all!: flush-tmp! flush-docs!
 
 # -- files --
-$(PACKAGE_BUILD): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES)
+$(PACKAGE_BUILD): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_FILES)
 	$(call WHEN_IN,,flags=--no-minify) ;\
-	yarn parcel build $(PACKAGE_ENTRY_POINT) $$flags --public-url $$PWD/$(BUILD_FOLDER)
+	yarn parcel build $(PACKAGE_ENTRY_POINT) \
+		--public-url $$PWD/$(BUILD_FOLDER) \
+		--target node \
+		$$flags
 
-$(DOC_FOLDERS_AND_FILES): $(SOURCE_FOLDERS_AND_FILES) $(DEP_FILES)
+$(DOC_FOLDERS_AND_FILES): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES)
 	make flush-docs ;\
 	yarn typedoc
 
-$(LOCAL_CI_CONFIG): $(CI_CONFIG) $(DEP_FILES)
+$(LOCAL_CI_CONFIG): $(DEP_FILES) $(CI_CONFIG)
 	circleci config process $(CI_CONFIG) > $(LOCAL_CI_CONFIG)
 
 # -- dependencies --

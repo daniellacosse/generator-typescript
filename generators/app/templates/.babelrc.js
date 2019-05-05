@@ -2,6 +2,7 @@ const presets = [
   ["@babel/preset-env", { targets: { esmodules: true } }],
   "@babel/preset-typescript"
 ];
+
 const plugins = [
   [
     "module-resolver",
@@ -13,4 +14,4 @@ const plugins = [
   "convert-to-json"
 ];
 
-module.exports = require("babel-jest").createTransformer({ presets, plugins });
+module.exports = { presets, plugins };

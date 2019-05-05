@@ -19,6 +19,7 @@
       "jest"
     ]
   },
+  // we exclude these files to save typescript from having to go through them
   "exclude": [
     ".cache",
     ".circleci",

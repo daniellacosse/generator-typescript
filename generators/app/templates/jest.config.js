@@ -22,8 +22,5 @@ module.exports = {
        */
       branches: 87.5
     }
-  },
-  transform: {
-    "^.+\\.ts$": "<rootDir>/.jest/jest.transform.js"
   }
 };

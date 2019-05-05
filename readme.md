@@ -17,7 +17,7 @@ feel free to add this to your `~/.bash_profile` or just run the commands manuall
 
 ```sh
 dts() {
-  read $MY_PROJECT_NAME
+  read MY_PROJECT_NAME
 
   # the terminal will wait for you to type in the name of your project. please use `pascal-case`
 
