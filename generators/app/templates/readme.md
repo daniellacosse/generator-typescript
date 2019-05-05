@@ -65,7 +65,8 @@ make release!
 ### ⚠️ `flush-*!` : clears out generated files!! **BE CAREFUL**
 
 ```sh
-make flush-all!
+# clears out all temporary files
+make flush-cache!
 ```
 
  - `flush-deps!` - clears out dependency locks. **forces all your dependencies to reinstall.**
@@ -73,5 +74,5 @@ make flush-all!
  - `flush-docs!` - destroys all the docs so they can be rebuilt
  - `flush-ci!` - destroys the local ci config
  - `flush-coverage!` - deletes the last coverage report
- - `flush-tmp!` - clears out everything but the docs
+ - `flush-cache!` - clears out all temporary files
  - `flush-all!` - clears all generated files

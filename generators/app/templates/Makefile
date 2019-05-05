@@ -31,8 +31,8 @@ TEST_RESULTS=$(BUILD_FOLDER)/.jest-test-results.json
 
 # documentation
 DOCS=documentation
-DOC_FOLDERS_AND_FILES:=$(shell find $(DOCS) -type d) \
-	$(shell find $(DOCS) -type f -name '*')
+DOC_FOLDERS_AND_FILES:=$(shell find $(DOC_FOLDER) -type d) \
+	$(shell find $(DOC_FOLDER) -type f -name '*')
 
 # ci
 CI_CONFIG=.circleci/config.yml
@@ -48,7 +48,8 @@ LOCAL_CI_CONFIG=$(BUILD_FOLDER)/config.local.yml
 	ci \
 
 	release! \
-	flush-build! flush-ci! flush-coverage! flush-deps! flush-docs! flush-tmp! \
+	flush-build! flush-ci! flush-coverage! flush-deps! flush-docs! \
+	flush-cache! \
 	flush-all!
 
 default: $(PACKAGE_BUILD) $(DEP_FILES)
@@ -84,7 +85,7 @@ release!:
 	yarn config set version-git-message "v%s [ci skip]" ;\
 	yarn version --patch ;\
 	\
-	git add $(DOCS) ;\
+	git add $(DOC_FOLDER) ;\
 	git commit --amend --no-edit
 
 flush-deps!:
@@ -92,22 +93,29 @@ flush-deps!:
 	rm -rf $(DEP_FOLDER)
 
 flush-build!:
-	rm -rf $(BUILD)
+	rm -rf $(BUILD_FOLDER)
 
 flush-docs!:
-	rm -rf $(DOCS)
+	rm -rf $(DOC_FOLDER)
 
 flush-ci!:
 	rm -rf $(LOCAL_CI_CONFIG)
 
 flush-coverage!:
-	rm -rf coverage
+	rm -rf $(TEST_COVERAGE_FOLDER)
+ \
+ flush-cache!: flush-deps! flush-build! flush-ci! flush-coverag\
+ 	rm -rf .cache
 
-flush-tmp!: flush-deps! flush-build! flush-ci! flush-coverage!
-flush-all!: flush-tmp! flush-docs!
+flush-all!: \
+flush-cache! flush-doc\
 
 # -- files --
-$(PACKAGE_BUILD): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_FILES)
+
+$(BUILD_FOLDER):
+	mkdir -p $(BUILD_FOLDER)
+
+$(PACKAGE_BUILD): $(DEP_FILES) $(BUILD_FOLDER) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_FILES)
 	$(call WHEN_IN,,flags=--no-minify) ;\
 	yarn parcel build $(PACKAGE_ENTRY_POINT) \
 		--public-url $$PWD/$(BUILD_FOLDER) \
@@ -115,7 +123,7 @@ $(PACKAGE_BUILD): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_
 		$$flags
 
 $(DOC_FOLDERS_AND_FILES): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES)
-	make flush-docs ;\
+	make flush-docs! ;\
 	yarn typedoc
 
 $(LOCAL_CI_CONFIG): $(DEP_FILES) $(CI_CONFIG)
