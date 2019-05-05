@@ -25,6 +25,9 @@ dts() {
   cd $MY_PROJECT_NAME
 
   yo @daniellacosse/typescript
+  
+  # run `make` as a smoke test
+  make
 }
 ```
 
