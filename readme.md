@@ -24,6 +24,7 @@ dts() {
   mkdir $MY_PROJECT_NAME
   cd $MY_PROJECT_NAME
 
+  # the magic part 🧙‍♂️
   yo @daniellacosse/typescript
   
   # run `make` as a smoke test
