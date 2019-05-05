@@ -1,18 +1,18 @@
 {
   "recommendations": [
-    "eamodio.gitlens",
     "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
     "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree",
     "joelday.docthis",
-    "peterjausovec.vscode-docker",
-    "rebornix.project-snippets",
-    "wayou.vscode-todo-highlight",
-    "yzhang.markdown-all-in-one",
     "rebornix.project-snippets",
     "redhat.vscode-yaml",
+    "richie5um2.vscode-sort-json",
+    "ryanluker.vscode-coverage-gutters",
     "sharat.vscode-brewfile",
     "technosophos.vscode-make",
-    "richie5um2.vscode-sort-json",
-    "zengxingxin.sort-js-object-keys"
+    "yzhang.markdown-all-in-one",
+    "zengxingxin.sort-js-object-keys",
+    "ziyasal.vscode-open-in-github"
   ]
 }

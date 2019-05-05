@@ -1,104 +1,138 @@
+-include .env
+
 SHELL:=/bin/bash
-GIT:=$(which git)
-BREW:=$(which brew)
+WHEN_IN=if [[ "$(ENV)" == "$(1)" ]]; then $(2); fi
 
-BREW_URL=https://raw.githubusercontent.com/Homebrew/install/master/install
+# dependencies
+DEP_FOLDER=.cache/deps
+DEP_FILES= \
+	$(DEP_FOLDER)/last_brew \
+	$(DEP_FOLDER)/last_yarn \
+	$(DEP_FOLDER)/last_code
 
+# source code
 SOURCE_FOLDER=source
-SOURCE_FOLDERS=$(find $(SOURCE_FOLDER) -type d)
-SOURCE_FILES=$(find $(SOURCE_FOLDER) -type f -name '*')
+SOURCE_FOLDERS_AND_FILES:=$(shell find $(SOURCE_FOLDER) -type d) \
+	$(shell find $(SOURCE_FOLDER) -type f -name '*')
 
-# we need to "unpack" these flags at buildtime with the "+s" function
-BUILD_FLAGS=--target+node+--no-minify+--public-url+$$PWD/dist
-+s=$(subst +, ,$1)
+# build
+BUILD_FOLDER=dist
+PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/index.ts
+PACKAGE_BUILD=$(BUILD_FOLDER)/index.js
 
-INDEX_BUILD_POINT=$(SOURCE_FOLDER)/index.ts
-TEST_BUILD_POINT=$(SOURCE_FOLDER)/**/__tests__
+# tests
+TEST_CONFIG_FOLDER=.jest
+TEST_CONFIG=$(TEST_CONFIG_FOLDER)/jest.config.js
+TEST_RESULTS=$(BUILD_FOLDER)/.jest-test-results.json
 
-VERSION=$(cat package.json | jq -r '.version')
-IMAGE_REGISTRY=gcr.io/<%= gcpProjectID %>/<%= title %>
+# documentation
+DOCS=documentation
+DOC_FOLDERS_AND_FILES:=$(shell find $(DOCS) -type d) \
+	$(shell find $(DOCS) -type f -name '*')
+
+# ci
+CI_CONFIG=.circleci/config.yml
+LOCAL_CI_CONFIG=$(BUILD_FOLDER)/config.local.yml
 
 # -- commands --
-.PHONY: start \
-  lint \
+.PHONY: default \
+	branch \
+	lint \
 	test \
-	code \
 	watch \
-	image \
-	patch \
-	release \
-	clear-all \
-	clear-cache \
-	clear-yarn \
-	clear-docs
+	coverage \
+	ci \
 
-start: dist/index.js
-	node dist/index.js
+	release! \
+	flush-build! flush-ci! flush-coverage! flush-deps! flush-docs! flush-tmp! \
+	flush-all!
 
-lint: # only lints files that were changed since last commit
-	changes=$$(git diff --name-only --staged | egrep '\.ts') ;\
-	if [[ $$changes ]] ;\
-		then yarn eslint $$changes ;\
-	fi
+default: $(PACKAGE_BUILD) $(DEP_FILES)
+	node $(PACKAGE_BUILD)
 
-test: dist/source
-	yarn ava
+branch:
+	git checkout master ;\
+	git pull ;\
+	git checkout -b $(NAME)
 
-watch:
-	yarn concurrently \
-		'yarn parcel watch $(TEST_BUILD_POINT) $(call +s, $(BUILD_FLAGS))' \
-		'yarn ava --watch'
+lint: $(DEP_FILES)
+	diff_target="HEAD^ --staged" ;\
+	current_branch=$$(git rev-parse --abbrev-ref HEAD) ;\
+	$(call WHEN_IN,circleci,diff_target=master...$$current_branch) ;\
+	\
+	changes=$$(git diff --diff-filter=MA $$diff_target --name-only | egrep '\.js$$|\.vue$$') ;\
+	if [[ $$changes ]]; then yarn eslint $$changes; fi
 
-code: .vscode/extensions.json
-	code . ;\
-	make watch
+test: $(DEP_FILES)
+	$(call WHEN_IN,circleci,flags=--bail) ;\
+	yarn jest $$flags --config $(TEST_CONFIG) --json --outputFile=$(TEST_RESULTS)
 
-patch: documentation
-	yarn version --patch -m "%s [ci skip]"
+watch: $(DEP_FILES)
+	yarn jest --watch --config $(TEST_CONFIG)
 
-image: yarn.lock package.json
-	docker build . -t <%= title %>:$(VERSION)
+coverage: $(DEP_FILES)
+	yarn jest --coverage --config $(TEST_CONFIG)
 
-release: image
-	gcloud auth configure-docker ;\
-	gcloud docker push ${IMAGE_REGISTRY}:$(VERSION)
+ci: $(LOCAL_CI_CONFIG) $(DEP_FILES)
+	circleci local execute --job $(JOB) --config $(LOCAL_CI_CONFIG)
 
-clear-all: clear-yarn clear-cache clear-docs
+release!:
+	yarn config set version-git-message "v%s [ci skip]" ;\
+	yarn version --patch ;\
+	\
+	git add $(DOCS) ;\
+	git commit --amend --no-edit
 
-clear-cache:
-	rm -rf dist ;\
-	rm -rf .cache
-
-clear-yarn:
+flush-deps!:
 	rm -rf node_modules ;\
-	rm yarn.lock
+	rm -rf $(DEP_FOLDER)
 
-clear-docs:
-	rm -rf documentation
+flush-build!:
+	rm -rf $(BUILD)
+
+flush-docs!:
+	rm -rf $(DOCS)
+
+flush-ci!:
+	rm -rf $(LOCAL_CI_CONFIG)
+
+flush-coverage!:
+	rm -rf coverage
+
+flush-tmp!: flush-deps! flush-build! flush-ci! flush-coverage!
+flush-all!: flush-tmp! flush-docs!
 
 # -- files --
-dist/index.js: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
-	yarn parcel build $(INDEX_BUILD_POINT) $(call +s, $(BUILD_FLAGS))
-dist/source: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
-	yarn parcel build $(TEST_BUILD_POINT) $(call +s, $(BUILD_FLAGS))
-documentation: yarn.lock $(SOURCE_FILES) $(SOURCE_FOLDERS)
+$(PACKAGE_BUILD): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES)
+	$(call WHEN_IN,,flags=--no-minify) ;\
+	yarn parcel build $(PACKAGE_ENTRY_POINT) $$flags --public-url $$PWD/$(BUILD_FOLDER)
+
+$(DOC_FOLDERS_AND_FILES): $(SOURCE_FOLDERS_AND_FILES) $(DEP_FILES)
+	make flush-docs ;\
 	yarn typedoc
-.vscode/extensions.json: Brewfile
+
+$(LOCAL_CI_CONFIG): $(CI_CONFIG) $(DEP_FILES)
+	circleci config process $(CI_CONFIG) > $(LOCAL_CI_CONFIG)
+
+# -- dependencies --
+
+# we store previous dependency installs in a temporary folder
+# to decide if we need to retrigger them
+$(DEP_FOLDER):
+	mkdir -p $(DEP_FOLDER)
+
+$(DEP_FOLDER)/last_brew: $(DEP_FOLDER) Brewfile
+	$(call WHEN_IN,circleci,exit 0) ;\
+	brew bundle \
+		> $(DEP_FOLDER)/last_brew 2>&1
+
+$(DEP_FOLDER)/last_yarn: $(DEP_FOLDER) yarn.lock
+	yarn install \
+		> $(DEP_FOLDER)/last_yarn 2>&1
+
+$(DEP_FOLDER)/last_code: $(DEP_FOLDER) .vscode/extensions.json
+	$(call WHEN_IN,circleci,exit 0) ;\
 	cat .vscode/extensions.json |\
 	jq -r '.recommendations | .[]' |\
-	xargs -L 1 code --install-extension
-yarn.lock: Brewfile
-	yarn install
-Brewfile: $(GIT) $(BREW)
-	brew bundle
-
-# -- tools --
-$(GIT):
-	xcode-select --install ;\
-
-	until [ "$$(which git)" ] ;\ 
-		sleep 1 ;\
-	done
-
-$(BREW):
-	/usr/bin/ruby -e $$(curl -fsSL $(BREW_URL))
+	xargs -L 1 code --install-extension \
+		> $(DEP_FOLDER)/last_code 2>&1

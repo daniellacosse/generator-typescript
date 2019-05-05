@@ -1,9 +1,18 @@
+# system
+.env
+.DS_Store
+
+# yarn
 node_modules
 yarn-error.log
+
+# jest
+.jest-test-results.json
+coverage
 
 # parceljs
 .cache
 dist
 
-# code coverage
-.nyc_output
+# circleci
+config.local.yml
