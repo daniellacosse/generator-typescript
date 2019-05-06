@@ -103,7 +103,7 @@ then, in the `Jobs` tab you'll need to click on the ⚙️ icon next to your pro
 
 ![step 10](tutorial-images/step-10.png)
 
-here you can add your 🔑 user keys to `circleci`. `circleci` will then have access to do it needs to do everything for you.
+here you can add your 🔑 user keys to `circleci`. `circleci` will then have access it needs to do everything for you.
 
 ---
 
