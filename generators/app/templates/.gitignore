@@ -1,5 +1,6 @@
 # system
 .env
+.deps
 .DS_Store
 
 # yarn
@@ -12,7 +13,6 @@ coverage
 
 # parceljs
 .cache
-dist
 
 # circleci
 config.local.yml

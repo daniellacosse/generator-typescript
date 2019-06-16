@@ -4,7 +4,7 @@ SHELL:=/bin/bash
 WHEN_IN=if [[ "$(ENV)" == "$(1)" ]]; then $(2); fi
 
 # dependencies
-DEP_FOLDER=.cache/deps
+DEP_FOLDER=.deps
 DEP_FILES= \
 	$(DEP_FOLDER)/last_brew \
 	$(DEP_FOLDER)/last_yarn \
@@ -16,7 +16,7 @@ SOURCE_FOLDERS_AND_FILES:=$(shell find $(SOURCE_FOLDER) -type d) \
 	$(shell find $(SOURCE_FOLDER) -type f -name '*')
 
 # build
-BUILD_FOLDER=dist
+BUILD_FOLDER=build
 PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/index.ts
 PACKAGE_BUILD=$(BUILD_FOLDER)/index.js
 
@@ -81,7 +81,7 @@ coverage: $(DEP_FILES)
 ci: $(LOCAL_CI_CONFIG) $(DEP_FILES)
 	circleci local execute --job $(JOB) --config $(LOCAL_CI_CONFIG)
 
-release!:
+release!: $(DOC_FOLDERS_AND_FILES)
 	yarn config set version-git-message "v%s [ci skip]" ;\
 	yarn version --patch ;\
 	\
@@ -103,12 +103,11 @@ flush-ci!:
 
 flush-coverage!:
 	rm -rf $(TEST_COVERAGE_FOLDER)
- \
- flush-cache!: flush-deps! flush-build! flush-ci! flush-coverag\
+
+flush-cache!:
  	rm -rf .cache
 
-flush-all!: \
-flush-cache! flush-doc\
+flush-all!: flush-cache! flush-doc
 
 # -- files --
 
@@ -118,6 +117,7 @@ $(BUILD_FOLDER):
 $(PACKAGE_BUILD): $(DEP_FILES) $(BUILD_FOLDER) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_FILES)
 	$(call WHEN_IN,,flags=--no-minify) ;\
 	yarn parcel build $(PACKAGE_ENTRY_POINT) \
+		--out-dir $(BUILD_FOLDER) \
 		--public-url $$PWD/$(BUILD_FOLDER) \
 		--target node \
 		$$flags
