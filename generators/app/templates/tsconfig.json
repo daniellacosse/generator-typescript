@@ -9,8 +9,9 @@
       "dom",
       "scripthost"
     ],
-    "module": "commonjs",
-    "outDir": "dist",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": ".make/dist",
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
@@ -23,11 +24,11 @@
   "exclude": [
     ".cache",
     ".circleci",
+    ".make",
     ".github",
     ".vscode",
     "config",
     "coverage",
-    "dist",
     "documentation",
     "node_modules"
   ],

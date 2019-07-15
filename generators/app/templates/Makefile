@@ -3,31 +3,90 @@
 SHELL:=/bin/bash
 WHEN_IN=if [[ "$(ENV)" == "$(1)" ]]; then $(2); fi
 
-# dependencies
-DEP_FOLDER=.deps
-DEP_FILES= \
-	$(DEP_FOLDER)/last_brew \
-	$(DEP_FOLDER)/last_yarn \
-	$(DEP_FOLDER)/last_code
+PROXY_FOLDER=.make
 
-# source code
+PROJECT_DEPENDENCY_PROXY_TARGETS = \
+	$(PROXY_FOLDER)/Brewfile \
+	$(PROXY_FOLDER)/yarn.lock \
+	$(PROXY_FOLDER)/vscode-extensions.json
+
+# -- commands --
+
+.PHONY: \
+	default \
+	\
+	lint test coverage \
+	\
+	ci release release! \
+	\
+	reset reset!
+
+# -- default --
+
 SOURCE_FOLDER=source
-SOURCE_FOLDERS_AND_FILES:=$(shell find $(SOURCE_FOLDER) -type d) \
-	$(shell find $(SOURCE_FOLDER) -type f -name '*')
+SOURCE_FILES:=$(shell find $(SOURCE_FOLDER) -type f -name '*')
 
-# build
-BUILD_FOLDER=build
-PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/index.ts
-PACKAGE_BUILD=$(BUILD_FOLDER)/index.js
-
-# config
 CONFIG_FOLDER=configuration
-CONFIG_FOLDERS_AND_FILES:=tsconfig.json $(shell find $(CONFIG_FOLDER) -type d) \
-	$(shell find $(CONFIG_FOLDER) -type f -name '*')
+CONFIG_FILES:=tsconfig.json $(shell find $(CONFIG_FOLDER) -type f -name '*')
 
-# tests
-TEST_COVERAGE_FOLDER=coverage
-TEST_RESULTS=$(BUILD_FOLDER)/.jest-test-results.json
+PACKAGE_ENTRY_POINT=$(SOURCE_FOLDER)/cli.ts
+PACKAGE_BUILD=$(PROXY_FOLDER)/cli.js
+
+CRED_TEMPLATE=$(CONFIG_FOLDER)/credentials.example.yml
+CREDS=$(CONFIG_FOLDER)/credentials.yml
+
+default: $(PROXY_FOLDER)
+	make $(PACKAGE_BUILD) ;\
+	node $(PACKAGE_BUILD) $(CMD)
+
+$(PACKAGE_BUILD): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(SOURCE_FILES) $(CONFIG_FILES) $(CREDS)
+	$(call WHEN_IN,,flags=--no-minify) ;\
+	yarn parcel build $(PACKAGE_ENTRY_POINT) $$flags \
+		--target node \
+		--out-dir $(PROXY_FOLDER) \
+		--public-url $$PWD/$(PROXY_FOLDER)
+
+$(CREDS): $(CRED_TEMPLATE)
+	cp -f $(CRED_TEMPLATE) $(CREDS) ;\
+	$(call WHEN_IN,,code $(CREDS))
+
+# -- lint --
+
+LINT_PROXY_TARGET=$(PROXY_FOLDER)/lint
+
+lint: $(PROXY_FOLDER)
+	make $(LINT_PROXY_TARGET)
+
+$(LINT_PROXY_TARGET): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(SOURCE_FILES)
+	diff_target="HEAD^ --staged" ;\
+	current_branch=$$(git rev-parse --abbrev-ref HEAD) ;\
+	$(call WHEN_IN,circleci,diff_target=master...$$current_branch) ;\
+	\
+	changes=$$( \
+		git diff \
+		--diff-filter=MA \
+		$$diff_target \
+		--name-only \
+			| egrep '\.ts'\
+	) ;\
+	\
+	if [[ $$changes ]] ;\
+		then yarn eslint $$changes \
+			> $(LINT_PROXY_TARGET) ;\
+	fi
+
+# -- test --
+
+TEST_RESULTS=$(PROXY_FOLDER)/.jest-test-results.json
+
+test: $(PROXY_FOLDER)
+	make $(TEST_RESULTS)
+
+# TODO: --findRelatedTests / --changedSince
+$(TEST_RESULTS): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(SOURCE_FILES)
+	$(call WHEN_IN,circleci,flags=--ci --bail) ;\
+	yarn jest $$flags --json --outputFile=$(TEST_RESULTS)
+
 
 # documentation
 DOCS=documentation
@@ -38,116 +97,95 @@ DOC_FOLDERS_AND_FILES:=$(shell find $(DOC_FOLDER) -type d) \
 CI_CONFIG=.circleci/config.yml
 LOCAL_CI_CONFIG=$(BUILD_FOLDER)/config.local.yml
 
-# -- commands --
-.PHONY: default \
-	branch \
-	lint \
-	test \
-	watch \
-	coverage \
-	ci \
+# -- coverage --
 
-	release! \
-	flush-build! flush-ci! flush-coverage! flush-deps! flush-docs! \
-	flush-cache! \
-	flush-all!
+COVERAGE_FOLDER=$(PROXY_FOLDER)/coverage
+COVERAGE_FILES=$(shell find $(COVERAGE_FOLDER) -type f -name '*' 2>/dev/null)
 
-default: $(PACKAGE_BUILD) $(DEP_FILES)
-	node $(PACKAGE_BUILD)
+coverage: $(PROXY_FOLDER)
+	$(call WHEN_IN,circleci,flags=--ci) ;\
+	make $(COVERAGE_FOLDER)
 
-branch:
-	git checkout master ;\
-	git pull ;\
-	git checkout -b $(NAME)
+$(COVERAGE_FOLDER): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(SOURCE_FILES)
+	yarn jest --coverage && mv ./coverage $(COVERAGE_FOLDER)
 
-lint: $(DEP_FILES)
-	diff_target="HEAD^ --staged" ;\
-	current_branch=$$(git rev-parse --abbrev-ref HEAD) ;\
-	$(call WHEN_IN,circleci,diff_target=master...$$current_branch) ;\
-	\
-	changes=$$(git diff --diff-filter=MA $$diff_target --name-only | egrep '\.ts$$') ;\
-	if [[ $$changes ]]; then yarn eslint $$changes; fi
+# -- ci --
 
-test: $(DEP_FILES)
-	$(call WHEN_IN,circleci,flags=--bail) ;\
-	yarn jest $$flags --json --outputFile=$(TEST_RESULTS)
+CI_PROXY_TARGET=$(PROXY_FOLDER)/ci
 
-watch: $(DEP_FILES)
-	yarn jest --watch
+CI_CONFIG=.circleci/config.yml
+LOCAL_CI_CONFIG=$(PROXY_FOLDER)/config.local.yml
 
-coverage: $(DEP_FILES)
-	yarn jest --coverage
+ci: $(PROXY_FOLDER)
+	make $(CI_PROXY_TARGET)
 
-ci: $(LOCAL_CI_CONFIG) $(DEP_FILES)
-	circleci local execute --job $(JOB) --config $(LOCAL_CI_CONFIG)
+$(CI_PROXY_TARGET): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(LOCAL_CI_CONFIG)
+	circleci local execute --job $(JOB) --config $(LOCAL_CI_CONFIG) \
+		> $(CI_PROXY_TARGET)
 
-release!: $(DOC_FOLDERS_AND_FILES)
+$(LOCAL_CI_CONFIG): $(PROXY_FOLDER) $(CI_CONFIG)
+	circleci config process $(CI_CONFIG) \
+		> $(LOCAL_CI_CONFIG)
+
+# -- release! --
+
+RELEASE_PROXY_TARGET=$(PROXY_FOLDER)/release!
+
+DOC_FOLDER=documentation
+DOC_FILES:=$(shell find $(DOC_FOLDER) -type f -name '*')
+
+release:
+	@echo "Are you sure? - please run 'release!' to confirm."
+
+release!: $(PROXY_FOLDER)
+	make $(RELEASE_PROXY_TARGET)
+
+$(RELEASE_PROXY_TARGET): $(PROJECT_DEPENDENCY_PROXY_TARGETS) $(CLI_BUILD) $(DOC_FILES)
 	yarn config set version-git-message "v%s [ci skip]" ;\
 	yarn version --patch ;\
 	\
 	git add $(DOC_FOLDER) ;\
-	git commit --amend --no-edit
+	git commit --amend --no-edit ;\
+	\
+	new_version=$$(cat package.json | jq -r '.version') ;\
+	yarn publish --new-version $$new_version --access public \
+		> $(RELEASE_PROXY_TARGET)
 
-flush-deps!:
-	rm -rf node_modules ;\
-	rm -rf $(DEP_FOLDER)
-
-flush-build!:
-	rm -rf $(BUILD_FOLDER)
-
-flush-docs!:
-	rm -rf $(DOC_FOLDER)
-
-flush-ci!:
-	rm -rf $(LOCAL_CI_CONFIG)
-
-flush-coverage!:
-	rm -rf $(TEST_COVERAGE_FOLDER)
-
-flush-cache!:
- 	rm -rf .cache
-
-flush-all!: flush-cache! flush-doc
-
-# -- files --
-
-$(BUILD_FOLDER):
-	mkdir -p $(BUILD_FOLDER)
-
-$(PACKAGE_BUILD): $(DEP_FILES) $(BUILD_FOLDER) $(SOURCE_FOLDERS_AND_FILES) $(CONFIG_FOLDERS_AND_FILES)
-	$(call WHEN_IN,,flags=--no-minify) ;\
-	yarn parcel build $(PACKAGE_ENTRY_POINT) \
-		--out-dir $(BUILD_FOLDER) \
-		--public-url $$PWD/$(BUILD_FOLDER) \
-		--target node \
-		$$flags
-
-$(DOC_FOLDERS_AND_FILES): $(DEP_FILES) $(SOURCE_FOLDERS_AND_FILES)
-	make flush-docs! ;\
+$(DOC_FILES): $(SOURCE_FILES)
+	make reset-docs! ;\
 	yarn typedoc
 
-$(LOCAL_CI_CONFIG): $(DEP_FILES) $(CI_CONFIG)
-	circleci config process $(CI_CONFIG) > $(LOCAL_CI_CONFIG)
+# -- reset! --
+
+reset:
+	@echo "Are you sure? - please run 'reset!' to confirm."
+
+reset!:
+	rm -rf $(PROXY_FOLDER)
 
 # -- dependencies --
 
-# we store previous dependency installs in a temporary folder
-# to decide if we need to retrigger them
-$(DEP_FOLDER):
-	mkdir -p $(DEP_FOLDER)
+$(PROXY_FOLDER):
+	mkdir -p $(PROXY_FOLDER)
 
-$(DEP_FOLDER)/last_brew: $(DEP_FOLDER) Brewfile
+$(PROXY_FOLDER)/Brewfile: Brewfile
 	$(call WHEN_IN,circleci,exit 0) ;\
-	brew bundle \
-		> $(DEP_FOLDER)/last_brew 2>&1
+	brew bundle --force \
+		> $(PROXY_FOLDER)/Brewfile
 
-$(DEP_FOLDER)/last_yarn: $(DEP_FOLDER) yarn.lock
+Brewfile: # watch this file
+
+$(PROXY_FOLDER)/yarn.lock: yarn.lock
 	yarn install \
-		> $(DEP_FOLDER)/last_yarn 2>&1
+		> $(PROXY_FOLDER)/yarn.lock
 
-$(DEP_FOLDER)/last_code: $(DEP_FOLDER) .vscode/extensions.json
+yarn.lock: # watch this file
+
+$(PROXY_FOLDER)/vscode-extensions.json: .vscode/extensions.json
 	$(call WHEN_IN,circleci,exit 0) ;\
 	cat .vscode/extensions.json |\
-	jq -r '.recommendations | .[]' |\
-	xargs -L 1 code --install-extension \
-		> $(DEP_FOLDER)/last_code 2>&1
+		jq -r '.recommendations | .[]' |\
+		xargs -L 1 code --install-extension \
+			> $(PROXY_FOLDER)/vscode-extensions.json
+
+.vscode/extensions.json: # watch this file

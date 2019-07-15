@@ -2,7 +2,8 @@
 
 [![documentation](https://img.shields.io/badge/documentation-blue.svg)](https://github.com/<%= username %>/<%= title %>/tree/master/documentation#<%= title %>-documentation) [![npm version](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>.svg)](https://badge.fury.io/js/%40<%= username %>%2F<%= title %>)
 
-> before you get started, you'll need `brew`: [ [macos](https://brew.sh/) | [linux](https://docs.brew.sh/Homebrew-on-Linux) ]
+> before you get started, you need `brew`: <br>
+> [install on mac](https://brew.sh/) | [install on linux](https://docs.brew.sh/Homebrew-on-Linux)
 
 ## commands
 
@@ -10,12 +11,6 @@
 
 ```sh
 make
-```
-
-### `branch` :  start a new branch
-
-```sh
-make branch NAME=<your-branch>
 ```
 
 ### `lint` : run the linter
@@ -28,12 +23,6 @@ make lint
 
 ```sh
 make test
-```
-
-### `watch` : automatically re-run the tests as you make edits
-
-```sh
-make watch
 ```
 
 ### `coverage` : check if you have sufficient test coverage
@@ -62,17 +51,9 @@ make ci JOB=<your-circleci-job>
 make release!
 ```
 
-### ⚠️ `flush-*!` : clears out generated files!! **BE CAREFUL**
+### ⚠️ `reset!` : clears out all temporary generated files!! **BE CAREFUL**
+
 
 ```sh
-# clears out all temporary files
-make flush-cache!
+make reset!
 ```
-
- - `flush-deps!` - clears out dependency locks. **forces all your dependencies to reinstall.**
- - `flush-build!` - clears the build. **forces the api to rebuild**
- - `flush-docs!` - destroys all the docs so they can be rebuilt
- - `flush-ci!` - destroys the local ci config
- - `flush-coverage!` - deletes the last coverage report
- - `flush-cache!` - clears out all temporary files
- - `flush-all!` - clears all generated files

@@ -1,5 +1,7 @@
 {
   "coverage-gutters.showGutterCoverage": true,
+  "coverage-gutters.coverageReportFileName": ".make/coverage/**/index.html",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.tabCompletion": "onlySnippets",
   "editor.tabSize": 2,
@@ -12,8 +14,7 @@
   "files.exclude": {
     "**/.DS_Store": true,
     "**/.cache": true,
-    "**/coverage": true,
-    "**/dist": true,
+    "**/.make": true,
     "**/node_modules": true,
   },
   "files.insertFinalNewline": true,
@@ -21,8 +22,7 @@
   "search.exclude": {
     "**/.DS_Store": true,
     "**/.cache": true,
-    "**/coverage": true,
-    "**/dist": true,
+    "**/.make": true,
     "**/documentation": true,
     "**/node_modules": true,
     "**/yarn.lock": true,

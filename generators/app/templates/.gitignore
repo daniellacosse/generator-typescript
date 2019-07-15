@@ -1,7 +1,7 @@
 # system
 .env
-.deps
 .DS_Store
+.make
 
 # yarn
 node_modules
