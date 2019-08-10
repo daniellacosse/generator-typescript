@@ -4,21 +4,14 @@
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "experimentalDecorators": true,
-    "lib": [
-      "esnext",
-      "dom",
-      "scripthost"
-    ],
+    "lib": ["esnext", "dom", "scripthost"],
     "module": "es2015",
     "moduleResolution": "node",
     "outDir": ".make/dist",
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "types": [
-      "node",
-      "jest"
-    ]
+    "types": ["node", "jest"]
   },
   // we exclude these files to save typescript from having to go through them
   "exclude": [
@@ -39,7 +32,7 @@
     "hideGenerator": true,
     "includeDeclarations": true,
     "mode": "file",
-    "name": "<%= displayTitle %>",
+    "name": "__DISPLAY_TITLE__",
     "out": "documentation",
     "readme": "none",
     "theme": "markdown"
