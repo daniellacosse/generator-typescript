@@ -1,72 +1,51 @@
 {
-  "name": "@daniellacosse/generator-typescript",
-  "version": "0.0.5",
-  "description": "develop typescript at scale with a full suite of helpful tools",
-  "author": {
-    "name": "Daniel LaCosse",
-    "email": "d@niellacos.se",
-    "url": "https://daniellacos.se"
-  },
-  "files": [
-    "generators"
-  ],
-  "main": "generators/index.js",
-  "keywords": [
-    "yeoman-generator"
-  ],
-  "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-config-xo": "^0.25.0",
-    "eslint-plugin-prettier": "^3.0.0",
-    "husky": "^1.2.0",
-    "jest": "^23.5.0",
-    "lint-staged": "^8.1.0",
-    "prettier": "^1.15.2",
-    "yeoman-assert": "^3.1.0",
-    "yeoman-generator": "^4.0.1",
-    "yeoman-test": "^1.7.0"
-  },
-  "engines": {
-    "npm": ">= 4.0.0"
+  "author": "__USERNAME__ <__EMAIL__>",
+  "bugs": {
+    "url": "https://github.com/__USERNAME__/__TITLE__/issues"
   },
   "dependencies": {
-    "chalk": "^2.1.0",
-    "yosay": "^2.0.1"
+    "consola": "^2.5.6"
   },
-  "jest": {
-    "testEnvironment": "node"
+  "description": "__DESCRIPTION__",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.11.3",
+    "@types/sinon": "^7.0.10",
+    "@typescript-eslint/eslint-plugin": "^1.5.0",
+    "@typescript-eslint/parser": "^1.5.0",
+    "babel-plugin-convert-to-json": "^0.1.0",
+    "babel-plugin-module-resolver": "3.2.0",
+    "babel-jest": "^24.7.1",
+    "eslint": "~5.10.0",
+    "eslint-config-prettier": "^4.1.0",
+    "jest": "^24.7.1",
+    "parcel-bundler": "^1.12.2",
+    "pre-commit": "^1.2.2",
+    "sinon": "^7.2.7",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-markdown": "^1.1.13",
+    "typescript": "^3.3.3333"
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.json": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "xo",
-      "prettier"
-    ],
-    "env": {
-      "jest": true,
-      "node": true
-    },
-    "rules": {
-      "prettier/prettier": "error"
-    },
-    "plugins": [
-      "prettier"
-    ]
+  "homepage": "https://github.com/__USERNAME__/__TITLE__#readme",
+  "license": "MIT",
+  "main": "build/index.js",
+  "name": "@__USERNAME__/__TITLE__",
+  "pre-commit": [
+    "make-lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/__USERNAME__/__TITLE__.git"
   },
   "scripts": {
-    "pretest": "eslint .",
-    "test": "jest"
+    "eslint": "./node_modules/eslint/bin/eslint",
+    "jest": "./node_modules/jest/bin/jest.js",
+    "make-lint": "make lint",
+    "parcel": "./node_modules/parcel-bundler/bin/cli.js",
+    "typedoc": "./node_modules/.bin/typedoc"
   },
-  "repository": "daniellacosse/generator-typescript",
-  "license": "MIT"
+  "version": "0.0.0"
 }

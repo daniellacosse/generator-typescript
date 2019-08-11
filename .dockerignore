@@ -1,0 +1,7 @@
+.circleci
+.github
+.vscode
+build
+configuration
+
+__tests__
