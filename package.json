@@ -1,12 +1,12 @@
 {
-  "author": "__USERNAME__ <__EMAIL__>",
+  "author": "<<USERNAME>> <<<EMAIL>>>",
   "bugs": {
-    "url": "https://github.com/__USERNAME__/__TITLE__/issues"
+    "url": "https://github.com/<<USERNAME>>/<<TITLE>>/issues"
   },
   "dependencies": {
     "consola": "^2.5.6"
   },
-  "description": "__DESCRIPTION__",
+  "description": "<<DESCRIPTION>>",
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.4.3",
@@ -29,19 +29,19 @@
     "typedoc-plugin-markdown": "^1.1.13",
     "typescript": "^3.3.3333"
   },
-  "homepage": "https://github.com/__USERNAME__/__TITLE__#readme",
+  "homepage": "https://github.com/<<USERNAME>>/<<TITLE>>#readme",
   "license": "MIT",
   "main": "build/index.js",
-  "name": "@__USERNAME__/__TITLE__",
+  "name": "@<<USERNAME>>/<<TITLE>>",
   "pre-commit": [
     "make-lint"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/__USERNAME__/__TITLE__.git"
+    "url": "git+https://github.com/<<USERNAME>>/<<TITLE>>.git"
   },
   "scripts": {
-    "eslint": "./node_modules/eslint/bin/eslint",
+    "eslint": "./node_modules/eslint/bin/eslint.js",
     "jest": "./node_modules/jest/bin/jest.js",
     "make-lint": "make lint",
     "parcel": "./node_modules/parcel-bundler/bin/cli.js",
