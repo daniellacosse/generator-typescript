@@ -33,10 +33,13 @@ commands:
             - v1-dependencies-{{ checksum "yarn.lock" }}
             - v1-dependencies-
 
-      - run: make yarn.lock
+      - run: |
+          git clone git@github.com:daniellacosse/typescript-buildfiles.git .buildfiles
+          make .make/yarn.lock
 
       - save_cache:
           paths:
+            - .buildfiles
             - .make
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}

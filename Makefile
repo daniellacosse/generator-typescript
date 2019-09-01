@@ -1,14 +1,14 @@
-BUILDFILES_FOLDER=.buildfiles
-BUILDFILES_REPO=git@github.com:daniellacosse/typescript-buildfiles.git
-COMMANDS=$(BUILDFILES_FOLDER)/main.mk $(BUILDFILES_FOLDER)/commands/*.mk
+BUILDFILES=.buildfiles
 
-include $(COMMANDS)
+include $(BUILDFILES)/main.mk $(BUILDFILES)/commands/*.mk
 
 default: $(PROXY_FOLDER)
-	make $(PROJECT_DEPENDENCY_PROXY_TARGETS) ;\
-	yarn parcel $(PACKAGE_ENTRY_POINT) \
-		--out-dir $(PROXY_FOLDER)/dist \
-		--cache-dir $(PROXY_FOLDER)/.cache
+	make $(PACKAGE_BUILD)
 
-$(COMMANDS):
-	git submodule add --force $(BUILDFILES_REPO) $(BUILDFILES_FOLDER)
+$(BUILDFILES):
+	git clone git@github.com:daniellacosse/typescript-buildfiles.git $(BUILDFILES)
+
+$(BUILDFILES)/main.mk $(BUILDFILES)/commands/*.mk: $(BUILDFILES)
+	cd $(BUILDFILES) ;\
+	git pull origin master ;\
+	cd ..

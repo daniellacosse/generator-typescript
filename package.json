@@ -23,7 +23,6 @@
     "eslint-config-prettier": "^4.1.0",
     "jest": "^24.7.1",
     "parcel-bundler": "^1.12.2",
-    "pre-commit": "^1.2.2",
     "sinon": "^7.2.7",
     "typedoc": "^0.14.2",
     "typedoc-plugin-markdown": "^1.1.13",
@@ -33,9 +32,6 @@
   "license": "MIT",
   "main": "build/index.js",
   "name": "@<<USERNAME>>/<<TITLE>>",
-  "pre-commit": [
-    "make-lint"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/<<USERNAME>>/<<TITLE>>.git"
@@ -43,7 +39,6 @@
   "scripts": {
     "eslint": "./node_modules/eslint/bin/eslint.js",
     "jest": "./node_modules/jest/bin/jest.js",
-    "make-lint": "make lint",
     "parcel": "./node_modules/parcel-bundler/bin/cli.js",
     "typedoc": "./node_modules/.bin/typedoc"
   },
