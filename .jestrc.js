@@ -1,1 +1,0 @@
-.buildfiles/configuration/.jestrc.js

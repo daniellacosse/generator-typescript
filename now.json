@@ -1,7 +1,0 @@
-{
-  "name": "<<TITLE>>",
-  "version": 2,
-  "routes": [
-    { "src": "/(?<app>[^/]*)", "dest": ".artifacts/apps/$app/index.html" }
-  ]
-}

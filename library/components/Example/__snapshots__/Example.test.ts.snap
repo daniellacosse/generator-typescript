@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Storyshots Example Example Story 1`] = `
-<div
-  class="Example"
->
-  Hello, World!!
-</div>
-`;
