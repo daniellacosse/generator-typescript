@@ -1,18 +1,1 @@
-# system
-.env
-.DS_Store
-.make
-
-# yarn
-node_modules
-yarn-error.log
-
-# jest
-.jest-test-results.json
-coverage
-
-# parceljs
-.cache
-
-# circleci
-config.local.yml
+.buildfiles/configuration/.gitignore
