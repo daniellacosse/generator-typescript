@@ -1,0 +1,3 @@
+interface ExampleData {
+  message: string;
+}

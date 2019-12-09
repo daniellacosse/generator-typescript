@@ -1,1 +1,1 @@
-.buildfiles/defaults/.babelrc.js
+.buildfiles/configuration/.babelrc.js
