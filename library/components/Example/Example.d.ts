@@ -1,3 +1,0 @@
-interface ExampleData {
-  message: string;
-}
