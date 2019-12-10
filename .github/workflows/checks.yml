@@ -1,11 +1,11 @@
-name: test
+name: checks
 on:
   pull_request:
     branches:
       - development
 
 jobs:
-  test:
+  all:
     runs-on: macos-latest
 
     steps:
