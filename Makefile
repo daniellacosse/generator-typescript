@@ -2,7 +2,7 @@
 include .buildfiles/index.mk
 
 .buildfiles/index.mk:
-	cd .buildfiles && git pull origin master
+	git submodule update --init --recursive
 
 # scripts for zeit/now
 .PHONY: build start
