@@ -14,3 +14,5 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v1
       - run: yarn test
+        env:
+          NODE_ENV: production
