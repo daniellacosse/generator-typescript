@@ -113,8 +113,7 @@
   "scripts": {
     "build": "make build",
     "start": "make start",
-    "test": "make checks",
-    "concurrently": "node_modules/concurrently/bin/concurrently.js"
+    "test": "make checks"
   },
   "version": "0.0.0"
 }
