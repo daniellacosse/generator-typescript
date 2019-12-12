@@ -2,7 +2,7 @@
 include .buildfiles/index.mk
 
 .buildfiles/index.mk:
-	cd .buildfiles && git pull origin master
+	git submodule update --init --recursive
 
 # scripts for zeit/now
 .PHONY: build start
@@ -29,5 +29,5 @@ checks: setup
 	@TASK=check yarn concurrently \
 		-n jest,eslint,stylelint \
 		"make RECIPE=jest" \
-		"make RECIPE=stylelint" \
-		"make RECIPE=eslint"
+		"make RECIPE=eslint" \
+		"make RECIPE=stylelint"
