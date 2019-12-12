@@ -29,5 +29,5 @@ checks: setup
 	@TASK=check yarn concurrently \
 		-n jest,eslint,stylelint \
 		"make RECIPE=jest" \
-		"make RECIPE=stylelint" \
-		"make RECIPE=eslint"
+		"make RECIPE=eslint" \
+		"make RECIPE=stylelint"
