@@ -2,10 +2,10 @@
 include .buildfiles/index.mk
 
 .buildfiles/index.mk:
-	git submodule update --init --recursive
-
+	git submodule add https://github.com/daniellacosse/typescript-buildfiles.git .buildfiles
+	
 # scripts for zeit/now
-.PHONY: build start
+.PHONY: build start checks
 
 APP_EXAMPLE_FOLDER=$(APPLICATION_FOLDER)/example
 APP_EXAMPLE_ENTRY=$(APPLICATION_FOLDER)/example/index.ts
